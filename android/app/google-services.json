@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "98397686150",
+    "project_id": "cleancode-poc",
+    "storage_bucket": "cleancode-poc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98397686150:android:08bbc47d1e736ecfe74407",
+        "android_client_info": {
+          "package_name": "com.example.cleancode_poc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98397686150-0b2hqusch7edohpk3f5gnn8aabv7uj40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNLapk9VwT70PpArcKqMYSLa9aXnxjjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98397686150-0b2hqusch7edohpk3f5gnn8aabv7uj40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98397686150:android:7eccd62185ff4afbe74407",
+        "android_client_info": {
+          "package_name": "com.servotask.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98397686150-0b2hqusch7edohpk3f5gnn8aabv7uj40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtNLapk9VwT70PpArcKqMYSLa9aXnxjjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98397686150-0b2hqusch7edohpk3f5gnn8aabv7uj40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
