@@ -7,7 +7,7 @@ class AuthService {
   Future<bool> isAuthenticated() async => firebaseService.isAuthenticated();
   Future<bool> login(String email, String password) async =>
       firebaseService.login(email, password);
-  Future<bool> register(String email, String password) async =>
-      firebaseService.registerByEmailAndPassword(email, password);
+  Future<bool> register(String email, String password, String inputName) async =>
+      firebaseService.registerByEmailAndPassword(email, password, inputName);
   Future<void> logout() async => firebaseService.logOut();
 }
