@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:help/auth_service.dart';
+import 'package:help/home_page.dart';
+import 'package:help/loginwrap.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
+  AuthService get authService => AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +15,9 @@ class RegisterPage extends StatelessWidget {
           final height = constraints.maxHeight;
           final width = constraints.maxWidth;
 
+          var passwordController = TextEditingController();
+          var nameController = TextEditingController();
+          var emailController = TextEditingController();
           return Stack(
             children: [
               Container(color: Colors.white),
@@ -29,13 +36,23 @@ class RegisterPage extends StatelessWidget {
               Positioned(
                 top: height * 0.2,
                 left: width / 2 - (width * 0.15),
-                child: Container(
-                  width: width * 0.3,
-                  height: width * 0.3,
-                  decoration: BoxDecoration(
-                    color: Colors.teal,
-                    borderRadius: BorderRadius.circular(width * 0.15),
-                  ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage(
+                                  title: 'Bem-vindo de volta',
+                                )));
+                  },
+                  child: Container(
+                      width: width * 0.3,
+                      height: width * 0.3,
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        borderRadius: BorderRadius.circular(width * 0.15),
+                      ),
+                      child: const Center(child: Text("Já tenho conta"))),
                 ),
               ),
               Positioned(
@@ -45,13 +62,15 @@ class RegisterPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Nome Completo:'),
+                    const Text('Nome:'),
                     SizedBox(height: height * 0.01),
                     TextField(
+                      keyboardType: TextInputType.name,
+                      controller: nameController,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade300,
-                        hintText: 'Digite seu nome completo',
+                        hintText: 'Digite seu nome',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
@@ -71,6 +90,8 @@ class RegisterPage extends StatelessWidget {
                     const Text('E-mail:'),
                     SizedBox(height: height * 0.01),
                     TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.grey.shade300,
@@ -94,6 +115,7 @@ class RegisterPage extends StatelessWidget {
                     const Text('Senha:'),
                     SizedBox(height: height * 0.01),
                     TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         filled: true,
@@ -112,9 +134,21 @@ class RegisterPage extends StatelessWidget {
                 bottom: height * 0.1,
                 left: width / 2 - (width * 0.15),
                 child: GestureDetector(
-                  onTap: () {
-                    // Ação ao clicar no botão
-                    print('Conta registrada!');
+                  // Ação ao clicar no botão de registrar
+                  onTap: () async {
+                    Future<bool> success = authService.register(
+                        emailController.text.trim(),
+                        passwordController.text.trim(),
+                        nameController.text.trim());
+                    if (await success) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Erro ao criar conta')));
+                    }
                   },
                   child: Container(
                     width: width * 0.3,

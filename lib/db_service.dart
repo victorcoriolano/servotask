@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:help/task_model.dart';
 import 'package:help/user_model.dart';
 
 class FirebaseService {
@@ -18,6 +19,7 @@ class FirebaseService {
   String todayDate =
       '${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}';
 
+  //Retorna dados do usuario
   UserModel? userFromFirebaseUser(User? user) {
     return user != null
         ? UserModel(
@@ -29,39 +31,88 @@ class FirebaseService {
         : null;
   }
 
+  //Registra a conta do usuário
   Future<bool> registerByEmailAndPassword(
-      String inputName, String email, String password) async {
+    String email,
+    String password,
+    String inputName,
+  ) async {
     try {
       UserCredential authResult = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
-
+      await authResult.user!.updateDisplayName(inputName);
       User? signedInUser = authResult.user;
-      authResult.user!.updateDisplayName(inputName);
-
-      //cria um user model temporario para uid de acordo com a nova conta criada
       UserModel? localUser = userFromFirebaseUser(signedInUser);
+      await addUserDetailsToFirestore(newUser: localUser);
 
-      //verifica se ele é válido, seta os estados de auth e cria o user no db
-      if (signedInUser != null && localUser!.uid != null) {
-        print('passou do if NOT NULL do sign up');
-        //atualização da model temporaria
-        await signedInUser.updateProfile(
-            displayName: inputName);
-        //cria o user no db
-        await dbService.addUserDetailsToFirestore(newUser: _localUser!);
-        print('passou do signup');
-        return true;
-      }
-      print('the user returned null. error occurred');
-      return false;
+      print('passou do signup. registrado');
+      return true;
     } catch (e) {
       print(e);
-      _localUser!.authEnumState = AuthEnumState.notLoggedIn;
       return false;
     }
   }
 
-  login(String email, String password) {}
-  isAuthenticated() {}
-  void logOut() {}
+  //Faz login na conta do usuário
+  Future<bool> login(String email, String password) async {
+    try {
+      UserCredential authResult = await auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (authResult.user != null) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  bool isAuthenticated() {
+    return auth.currentUser != null;
+  }
+
+  void logOut() {
+    auth.signOut();
+  }
+
+  addUserDetailsToFirestore({required UserModel? newUser}) async {
+    final mappedUser = newUser!.toMap();
+    await firestore.collection('users').doc(newUser.uid).set(mappedUser);
+  }
+
+  Future<void> createTask(String title, String description, String uid) async {
+    String? uid = auth.currentUser?.uid;
+
+    if (uid != null || auth.currentUser!.uid != uid) {
+      TaskModel newTask = TaskModel(
+        title,
+        description,
+        todayDate,
+        false,
+        uid!,
+      );
+
+      await firestore.collection('tasks').add(newTask.toJson());
+    } else {
+      auth.currentUser!.getIdToken(true);
+      return;
+    }
+  }
+
+  Future<List<TaskModel>> getAllTasks() async {
+    try {
+      QuerySnapshot querySnapshot = await firestore
+          .collection('tasks')
+          .orderBy('createdDate', descending: true)
+          .get();
+      return querySnapshot.docs.map((doc) => TaskModel.fromJson(doc)).toList();
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+  Future<void> deleteTask(String title) async {
+    await firestore.collection('tasks').doc(title).delete();
+  }
 }

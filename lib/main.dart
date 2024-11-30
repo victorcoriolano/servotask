@@ -1,11 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:help/firebase_options.dart';
+import 'package:help/home_page.dart';
 import 'package:help/loginwrap.dart';
+import 'package:help/task_service.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  Firebase.initializeApp();
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => TaskService()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,10 +24,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Servotask',
-      theme: ThemeData(
-          primarySwatch: Colors.blueGrey, primaryColor: Colors.blueAccent),
-      home: const LoginPage(title: 'Bem-vindo'),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Servotask',
+        theme: ThemeData(
+            primarySwatch: Colors.blueGrey, primaryColor: Colors.blueAccent),
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.userChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasData) {
+              return const HomePage();
+            }
+            return const LoginPage(title: "Bem-vindo");
+          },
+        ));
   }
 }

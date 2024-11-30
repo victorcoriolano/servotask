@@ -1,15 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TaskModel {
+  final String uid;
   final String title;
   final String description;
-  final DateTime createdDate = DateTime.now();
-  final bool isCompleted = false;
+  final String createdDate;
+  final bool isCompleted;
 
-  TaskModel(this.title, this.description);
+  TaskModel(this.title, this.description, this.createdDate, this.isCompleted, this.uid);
 
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
+  factory TaskModel.fromJson(DocumentSnapshot json) {
     return TaskModel(
       json['title'],
       json['description'],
+      json['createdDate'],
+      json['isCompleted'],
+      json['uid'],
     );
   }
 
@@ -17,7 +23,8 @@ class TaskModel {
         'title': title,
         'description': description,
         'createdDate': createdDate,
-        'isCompleted': isCompleted
+        'isCompleted': isCompleted,
+        'uid': uid
       };
 
   @override

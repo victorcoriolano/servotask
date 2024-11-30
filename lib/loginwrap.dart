@@ -16,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   
-  get authService => AuthService();
+  AuthService get authService => AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context, constraints) {
           final height = constraints.maxHeight;
           final width = constraints.maxWidth;
-
           return Stack(
             children: [
               Container(
@@ -148,6 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                 bottom: height * 0.1,
                 left: width / 2 - (width * 0.15),
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     String email = emailController.text;
                     String password = passwordController.text;
